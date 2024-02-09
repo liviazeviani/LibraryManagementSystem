@@ -1,3 +1,4 @@
+
 import sqlite3
 import livro
 
@@ -44,37 +45,41 @@ def list_books():
         print("Não há livros na biblioteca")
 
 #funcão que realiza empréstimo
-def loan(id_livro, data_emprestimo, data_devolucao):
+def loan(id_livro, id_usuario, data_emprestimo, data_devolucao):
     con = connect()
-    con.execute("INSERT INTO emprestimos(id_livro, data_emprestimo, data_devolucao)\
-                VALUES(?, ?, ?)", (id_livro, data_emprestimo, data_devolucao))
+    con.execute("INSERT INTO emprestimos(id_livro, id_usuario, data_emprestimo, data_devolucao)\
+                VALUES(?, ?, ?, ?)", (id_livro, id_usuario, data_emprestimo, data_devolucao))
     con.commit()
     con.close()
-    """
-     if livro.qtd_exemplares > 0:
-        livro.qtd_exemplares -= 1
-        print(f'Empréstimo realizado, restam {livro.qtd_exemplares} disponíveis')
-    else:
-         print(f'Não existem mais exemplares disponíveis')
-    """
    
 
 #funcão que exibe lista de livros emprestados
 def list_loan():
     con = connect()
-    lista_emprestados = con.execute("SELECT livros.titulo, emprestimos.data_emprestimo, emprestimos.data_devolucao\
+    lista_emprestados = con.execute("SELECT livros.titulo, usuarios.nome, emprestimos.data_emprestimo, emprestimos.data_devolucao\
                                     FROM livros\
                                     INNER JOIN emprestimos ON livros.id = emprestimos.id_livro\
+                                    INNER JOIN usuarios ON usuarios.id = emprestimos.id_usuario\
                                     WHERE emprestimos.data_devolucao IS NULL").fetchall()
     
     con.close()
     return lista_emprestados
 
+def uptade_loan(id_emprestimo, data_devolucao):
+    con = connect()
+    con.execute("UPDATE emprestimos SET qtd_exemplares = qtd_exemplares - 1, data_devolucao = ? WHERE id = ?", (id_emprestimo, data_devolucao))
+    id_emprestimo = int(input("Qual o ID do livro a ser emprestado? "))
+
+    con.commit()
+    con.close()
     
 #testando
 #add_book("Sandman", "Neil Gaiman", "Quadrinhos", "Rocco Editora", 2)
-#add_user("Lívia Zeviani", "brasileira")
+#add_book("Hamlet", "Shakespeare", "Clássica", "Companhia das Letras", 5)
+#add_user("Clarice", "brasileira")
 #list_books()
-loan(1, "04-02", "04-05")
+#loan(2, 1, "04-02", None)
 print(list_loan())
-    
+list_loan()
+
+

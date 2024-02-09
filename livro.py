@@ -5,3 +5,5 @@ class Livro:
     self.editora = editora
     self.genero = genero
     self.qtd_exemplares = qtd_exemplares
+
+    
